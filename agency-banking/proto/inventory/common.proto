@@ -59,6 +59,7 @@ message FeeCatalogue {
     optional com.agencybanking.proto.libs.common.proto.DataStatus status = 6;
     optional uint64 createdAt = 7;
     optional uint64 updatedAt = 8;
+    com.agencybanking.proto.disbursement.money.proto.Currency currency = 9;
 }
 
 message GetServiceResponse {
