@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.disbursement.common.proto;
+
+import "proto/disbursement/money.proto";
+import "proto/disbursement/transaction.proto";
+import "proto/wallet/account.proto";
+
+message TransactionUserActivity {
+    string description = 1;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount monetaryAmount = 2;
+    com.agencybanking.proto.wallet.account.proto.AccountIdentity senderAccount = 3;
+    com.agencybanking.proto.wallet.account.proto.AccountIdentity recipientAccount = 4;
+}
+
+message CreateDisbursementRequest {
+    com.agencybanking.proto.wallet.account.proto.AccountIdentity senderAccount = 2;
+    com.agencybanking.proto.wallet.account.proto.AccountIdentity recipientAccount = 3;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount monetaryAmount = 4;
+}
+
+message CreateDisbursementResponse {
+    optional com.agencybanking.proto.disbursement.transaction.proto.Transaction transaction = 1;
+    string responseMessage = 2;
+    bool successful = 3;
+}
+
+message FetchDisbursementRequest {
+    optional uint64 size = 2;
+    optional uint64 page = 3;
+    optional int64 fromDateTime = 4;
+    optional int64 toDateTime = 5;
+}
+
+message FetchDisbursementResponse {
+    repeated com.agencybanking.proto.disbursement.transaction.proto.Transaction transaction = 1;
+}
+
+message FetchDisbursementByReferenceRequest {
+    optional string reference = 2;
+}
+
+message FetchDisbursementByReferenceResponse {
+    com.agencybanking.proto.disbursement.transaction.proto.Transaction transaction = 1;
+}
+
+message GetRecentActivityRequest {
+    
+}
+
+message GetRecentActivityResponse {
+    repeated TransactionUserActivity transactionUserActivity = 1;
+}
+
+service DisbursementService {
+    rpc CreateDisbursement(CreateDisbursementRequest) returns (CreateDisbursementResponse);
+    rpc FetchDisbursment(FetchDisbursementRequest) returns (FetchDisbursementResponse);
+    rpc FetchDisbursmentByReference(FetchDisbursementByReferenceRequest) returns (FetchDisbursementByReferenceResponse);
+    rpc GetRecentActivity(GetRecentActivityRequest) returns (GetRecentActivityResponse);
+}

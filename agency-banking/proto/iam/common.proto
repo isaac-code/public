@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.iam.common.proto;
+
+import "proto/libs/common.proto";
+import "proto/iam/identity.proto";
+
+message UserManagementActivity {
+    string description = 1;
+    optional string previousData = 2;
+    optional string currentData = 3;
+}
+
+message UserActivity {
+    uint64 timeStamp = 1;
+    UserManagementActivity userManagementActivity = 4;
+}
+
+message GetRecentActivityResponse {
+    repeated UserActivity userActivity = 1;
+}
+
+message GetUserResponse {
+    com.agencybanking.proto.iam.identity.proto.User user = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse response = 2;
+}
+
+message GetUsersResponse {
+    repeated com.agencybanking.proto.iam.identity.proto.User user = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse response = 2;
+}
+
+service IAMService {
+    rpc GetRecentActivity(com.agencybanking.proto.libs.common.proto.Empty) returns (GetRecentActivityResponse);
+    rpc GetUser(com.agencybanking.proto.libs.common.proto.GenericGetRequest) returns (GetUserResponse);
+    rpc GetUsers(com.agencybanking.proto.libs.common.proto.GenericFetchRequestMeta) returns (GetUsersResponse);
+    rpc UpdateUserStatus(com.agencybanking.proto.libs.common.proto.GenericUpdateDataStatus) returns (GetUserResponse);
+}

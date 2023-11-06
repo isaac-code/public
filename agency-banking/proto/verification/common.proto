@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.verification.common.proto;
+
+enum VerificationVendor {
+    STRIPE = 0;
+    META_MAP = 1;
+}
+
+message VerifyMeRequest {
+    
+}
+
+message VerifyMeResponse {
+    VerificationVendor verificationVendor = 1;
+    string verificationToken = 2;
+}
+
+// Note that some of the calls that require authenticated user would have the refereshToken an token field
+
+service VerificationService {
+    rpc VerifyMe(VerifyMeRequest) returns (VerifyMeResponse);
+}

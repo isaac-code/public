@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.wallet.common.proto;
+
+import "proto/iam/identity.proto";
+import "proto/libs/common.proto";
+import "proto/wallet/account.proto";
+import "proto/disbursement/money.proto";
+
+message Beneficiary {
+    com.agencybanking.proto.iam.identity.proto.Name name = 1;
+    com.agencybanking.proto.wallet.account.proto.AccountIdentity account = 2;
+    com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 3;
+}
+
+message CreateBeneficiaryRequest {
+    Beneficiary beneficiary = 2;
+}
+
+message FetchBeneficiaryResponse {
+    repeated Beneficiary beneficiary = 1;
+}
+
+message DebitWalletRequest {
+    string walletReference = 1;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount amount = 2;
+}
+
+message CreditWalletRequest {
+    string walletReference = 1;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount amount = 2;
+}
+
+message GetWalletBalanceRequest {
+    com.agencybanking.proto.wallet.account.proto.AccountWallet accountWallet = 1;
+}
+
+message GetWalletBalanceResponse {
+    string walletReference = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse responseMeta = 2;
+}
+
+service WalletService {
+    rpc CreateBeneficiary(CreateBeneficiaryRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc FetchBeneficiary(com.agencybanking.proto.libs.common.proto.Empty) returns (FetchBeneficiaryResponse);
+    rpc DebitWallet(DebitWalletRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc CrebitWallet(CreditWalletRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc GetWalletBalance(GetWalletBalanceRequest) returns (GetWalletBalanceResponse);
+}

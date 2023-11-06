@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.disbursement.money.proto;
+
+enum Currency {
+    CAD = 0;
+    NGN = 1;
+    USD = 2;
+}
+
+message MonetaryAmount {
+    uint64 amount = 1;
+    Currency currency = 2;
+}

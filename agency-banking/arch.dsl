@@ -4,7 +4,7 @@ workspace {
         agent = person "Agent" "Process Transation for Customers"
         agentMobileDevice = person "Mobile Device"
         admin = person "Admin" "Manages Platform"
-        switchVendor = softwareSystem "Switch Vendor"
+        switchServiceProvider = softwareSystem "Switch Service Provider"
         otherBankSystem = softwareSystem "Other Bank" {
             otherBankApp = container "Other Bank App"
         }
@@ -12,11 +12,11 @@ workspace {
             ftCreditProcessor = container "Credit Processor"
             tsqProcessor = container "TSQ Processor"
         }
-        pushNotificationVendor = softwareSystem "Push Notification Vendor"
-        transferVendor = softwareSystem "Transfer Vendor"
-        rechargeVendor = softwareSystem "Recharge Vendor"
-        billVendor = softwareSystem "Bill Vendor"
-        verificationVendor = softwareSystem "Verification Vendor"
+        pushNotificationServiceProvider = softwareSystem "Push Notification Service Provider"
+        transferServiceProvider = softwareSystem "Transfer Service Provider"
+        rechargeServiceProvider = softwareSystem "Recharge Service Provider"
+        billServiceProvider = softwareSystem "Bill Service Provider"
+        verificationServiceProvider = softwareSystem "Verification Service Provider"
         
         agencyBankingSystem = softwareSystem "Agency Banking System" "Agency Banking" {
             posTerminal = container "POS Device" "Mutiple Language" "Android POS and Conventional POS"
@@ -30,7 +30,7 @@ workspace {
             terminalSwitchService = container "Terminal Switch Service" "JAVA" {
                 terminalTransactionProcessor = component "Terminal Transaction Processor"
                 terminalOracleServiceModule = component "Oracle Servie Module"
-                switchVendorModule = component "Switch-Vendor Module"
+                switchServiceProviderModule = component "Switch-Service Provider Module"
             }
             watchtower = container "Watchtower" "NextJS" "Admin Portal"
             appService = container "App Service" "NestJS" "Interface for Apps" {
@@ -49,13 +49,13 @@ workspace {
                 userManagementModule = component "User Management Module" "Manage Users"
                 permissionModule = component "IAM Permission Module" "Manage Permissions"
             }
-            identityVerificationService = container "Verification Service" "JAVA" "Manages Verification using Vendors" {
-                userVerificationModule = component "Manage User Verification with Vendors"
+            identityVerificationService = container "Verification Service" "JAVA" "Manages Verification using Service Providers" {
+                userVerificationModule = component "Manage User Verification with Service Providers"
             }
             inventoryService = container "Inventory Service" "JAVA" "Manages Product And Service List with their Category and their Pricing including Commissions" {
-                productCategoryModule = component "Product Category Module" "Category include bill, cashout, transfer, recharge"
+                serviceModule = component "Service Module" "Service include bill, cashout, transfer, recharge"
                 productModule = component "Product Module"
-                pricingGroupModule = component "Pricing Module"
+                feeCatalogueModule = component "Fee Catalogue Module"
             }
             nipWebService = container "NIP Web Service" "JAVA" "Process NIP Request" {
                 nipFTCreditProcessorModule = component "NIP FT Credit Processor Module"
@@ -64,7 +64,7 @@ workspace {
             nubanAccountService = container "Nuban Account Service" "JAVA" "Manage NUBAN Account" {
                 nubanAccountModule = component "NUBAN Account Module"
             }
-            transactionProcessor = container "Transaction Processor" "JAVA" "Process Transaction through Vendors and Keep Track of them" {
+            transactionProcessor = container "Transaction Processor" "JAVA" "Process Transaction through Service Providers and Keep Track of them" {
                 transactionProcessingModule = component "Transaction Processing Module" ""
                 transactionIdempotencyModule = component "Transaction Idempotency Module"
                 transactionResolverModule = component "Transaction Resolver Module" "Ensures Completion of Transaction In Pending State"
@@ -73,12 +73,12 @@ workspace {
                 accountWalletModule = component "Manage Account Debit And Credit"
             }
             oracleService = container "Oracle Service" "RUST" "Prediction Service" {
-                oracleVendorModule = component "Oracle Product/Switch Vendor Module"
+                oracleServiceProviderModule = component "Oracle Product/Switch Service Provider Module"
                 predictionModule = component "Prediction Module"
             }
-            transferService = container "Transfer Service" "JAVA" "Manages Transfer Vendor Integration"
-            rechargeService = container "Recharge Service" "JAVA" "Manages Recharge Vendor Integration"
-            billService = container "Bill Service" "JAVA" "Manages Bill Vendor Integration"
+            transferService = container "Transfer Service" "JAVA" "Manages Transfer Service Provider Integration"
+            rechargeService = container "Recharge Service" "JAVA" "Manages Recharge Service Provider Integration"
+            billService = container "Bill Service" "JAVA" "Manages Bill Service Provider Integration"
             communicationService = container "Communication Service" "JAVA" "Manage Sending Message/Email" {
                 otpModule = component "OTP Module"
             }
@@ -107,75 +107,78 @@ workspace {
         accountCreationModule -> otpModule "Generate Account Creation OTP"
         otpModule -> agentMobileDevice "Send OTP to Agent"
         accountCreationModule -> userVerificationModule "User Verification" "GRPC"
-        userVerificationModule -> verificationVendor "Process Verification"
+        userVerificationModule -> verificationServiceProvider "Process Verification"
         
         #Authentication (Login/Change Password/Reset Password)
         terminalAccountModule -> authenticationModule "Authenticate User Account" "GRPC" "Login/Change Password/Reset Password"
         appAccountModule -> authenticationModule "Authenticate User Account" "GRPC" "Login/Change Password/Reset Password"
         watchtowerService -> authenticationModule "Authenticate User Account" "GRPC" "Login/Change Password/Reset Password"
         
-        #CRUD Product Category
-        watchtowerService -> productCategoryModule "CRUD Product Category" "GRPC"
-        
-        #CRUD Product
+        #CRUD Product/Service/Fee
+        watchtowerService -> serviceModule "CRUD Service" "GRPC"
         watchtowerService -> productModule "CRUD Product" "GRPC"
-        watchtowerService -> pricingGroupModule "CRUD Product Pricing Group" "GRPC"
-        watchtowerService -> oracleVendorModule "CRUD Oracle Product/Switch Vendor" "GRPC"
+        watchtowerService -> feeCatalogueModule "CRUD Fee Catalogue" "GRPC"
+        watchtowerService -> oracleServiceProviderModule "CRUD Oracle Product/Switch Service Provider" "GRPC"
         
-        #Fetch Product
+        #Fetch Product/Service
         terminalProductModule -> productModule "Fetch Product for POS" "GRPC"
         appProductModule -> productModule "Fetch Product for APP" "GRPC"
+        terminalProductModule -> serviceModule "Fetch Service for POS" "GRPC"
+        appProductModule -> serviceModule "Fetch Service for APP" "GRPC"
         
         #Perform Terminal Transaction
         terminalTransactionProcessorModule -> terminalTransactionProcessor "Process Transaction" "GooglePubSub"
-        terminalTransactionProcessor -> predictionModule "Predict Switch Vendor" "GRPC"
-        terminalTransactionProcessor -> switchVendorModule "Process Card Transaction" "ISO/REST"
-        switchVendorModule -> switchVendor "Process Card Transaction With Vendor" "ISO/REST"
+        terminalTransactionProcessor -> predictionModule "Predict Switch Service Provider" "GRPC"
+        terminalTransactionProcessor -> switchServiceProviderModule "Process Card Transaction" "ISO/REST"
+        switchServiceProviderModule -> switchServiceProvider "Process Card Transaction With Service Provider" "ISO/REST"
         terminalTransactionProcessor -> transactionProcessingModule "Create Transaction" "GooglePubSub"
         
         #Perform APP Transaction
         appTransactionProcessorModule -> transactionProcessingModule "Create Transaction" "GooglePubSub"
         
         #Processing Transaction
+        transactionProcessingModule -> transactionIdempotencyModule "Verify Not Duplicate ActionUniqueID"
         transactionProcessingModule -> transactionIdempotencyModule "Lock Transaction with ActionUniqueID"
-        transactionProcessingModule -> pricingGroupModule "Get Pricing And Commission For Transaction"
+        transactionProcessingModule -> feeCatalogueModule "Get Pricing For Transaction"
         
         #Charge For Transaction
         transactionProcessingModule -> accountWalletModule "Debit Account Based On Pricing"
         
         #Cashout/WalletTopup Transaction (Withdrawal/WalletTopup)
-        transactionProcessingModule -> accountWalletModule "Credit Account Wallet Based on Cashout"
+        transactionProcessingModule -> accountWalletModule "Create and Credit Account Wallet Based on Cashout"
         
-        #Transaction Vendor Prediction
-        transactionProcessingModule -> predictionModule "Predict Product Vendor" "GRPC"
+        #Transaction ServiceProvider Prediction
+        transactionProcessingModule -> predictionModule "Predict Product Service Provider" "GRPC"
         
         #Perform Transfer Transaction
-        transactionProcessingModule -> transferService "Process Transaction" "GooglePubSub" "Push Transaction to Vendor for Processing"
-        transferService -> transferVendor "Process Transaction With Vendor" "REST"
+        transactionProcessingModule -> transferService "Process Transaction" "GooglePubSub" "Push Transaction to Service Provider for Processing"
+        transferService -> transferServiceProvider "Process Transaction With Service Provider" "REST"
         transferService -> transactionProcessingModule "Return Transaction Result" "GooglePubSub"
     
         #Perform Recharge Transaction
-        transactionProcessingModule -> rechargeService "Process Transaction" "GooglePubSub" "Push Transaction to Vendor for Processing"
-        rechargeService -> rechargeVendor "Process Transaction With Vendor" "REST"
+        transactionProcessingModule -> rechargeService "Process Transaction" "GooglePubSub" "Push Transaction to Service Provider for Processing"
+        rechargeService -> rechargeServiceProvider "Process Transaction With Service Provider" "REST"
         rechargeService -> transactionProcessingModule "Return Transaction Result" "GooglePubSub"
         
         #Perform Bill Transaction
-        transactionProcessingModule -> billService "Process Transaction" "GooglePubSub" "Push Transaction to Vendor for Processing"
-        billService -> billVendor "Process Transaction With Vendor" "REST"
+        transactionProcessingModule -> billService "Process Transaction" "GooglePubSub" "Push Transaction to Service Provider for Processing"
+        billService -> billServiceProvider "Process Transaction With Service Provider" "REST"
         billService -> transactionProcessingModule "Return Transaction Result" "GooglePubSub"
         
         #Transaction Resolution
         transactionResolverModule -> transactionProcessingModule "Process Pending Transaction" "GooglePubSub" "Loops through DB to get pending transaction and tries to complete them or assert them failed"
         
         #Successful Transaction Completion
+        transactionProcessingModule -> feeCatalogueModule "Get Commission For Transaction"
+        transactionProcessingModule -> accountWalletModule "Create and Credit Commission Wallets"
         transactionProcessingModule -> terminalPushNotificationModule "Push Final State of Transaction For Terminal Transaction"
         transactionProcessingModule -> appPushNotificationModule "Push Final State of Transaction For APP Transaction"
         
         #Push Notification
-        terminalPushNotificationModule -> pushNotificationVendor "Push Notification To Terminal" "REST"
-        appPushNotificationModule -> pushNotificationVendor "Push Notification To APP" "REST"
-        pushNotificationVendor -> posTerminal "Vendor Push Notification To Terminal"
-        pushNotificationVendor -> mobileApp "Vendor Push Notification To APP"
+        terminalPushNotificationModule -> pushNotificationServiceProvider "Push Notification To Terminal" "REST"
+        appPushNotificationModule -> pushNotificationServiceProvider "Push Notification To APP" "REST"
+        pushNotificationServiceProvider -> posTerminal "Service Provider Push Notification To Terminal"
+        pushNotificationServiceProvider -> mobileApp "Service Provider Push Notification To APP"
         
         #Dispute Reconciliation
         watchtowerService -> reconciliationModule "Upload Disputes from Banks"

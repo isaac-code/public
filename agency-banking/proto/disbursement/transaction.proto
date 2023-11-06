@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.disbursement.transaction.proto;
+
+import "proto/wallet/account.proto";
+import "proto/disbursement/money.proto";
+
+enum TransactionStatus {
+    NEW = 0;
+    SUCCESS = 1;
+    REFUND = 2;
+}
+
+enum TransactionType {
+    TRANSFER = 0;
+    WALLET_TOPUP = 1;
+    WITHDRAWAL = 2;
+}
+
+message Transaction {
+    string reference = 1;
+    TransactionType transactionType = 2;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount monetaryAmount = 3;
+    TransactionStatus transactionStatus = 4;
+    optional com.agencybanking.proto.wallet.account.proto.AccountIdentity senderAccount = 5;
+    optional com.agencybanking.proto.wallet.account.proto.AccountIdentity recipientAccount = 6;
+    uint64 timeCreated = 7;
+    uint64 timeCompleted = 8;
+    uint64 timeUpdated = 9;
+}

@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.inventory.common.proto;
+
+import "proto/libs/common.proto";
+
+message Service {
+    optional string id = 1;
+    string name = 2;
+    string key = 3;
+    optional com.agencybanking.proto.libs.common.proto.DataStatus status = 4;
+    optional uint64 createdAt = 5;
+    optional uint64 updatedAt = 6;
+}
+
+message Product {
+    optional string id = 1;
+    string name = 2;
+    string key = 3;
+    string serviceId = 4;
+    optional com.agencybanking.proto.libs.common.proto.DataStatus status = 5;
+    optional uint64 createdAt = 6;
+    optional uint64 updatedAt = 7;
+}
+
+enum FeeType {
+    SERVICE_PROVIDER = 0;
+    COMMISSION = 1;
+    COMPANY_CHARGE = 2;
+}
+
+enum FeeChargeType {
+    PERCENTAGE = 0;
+    PERCENTAGE_CAPPED = 1;
+    PERCENTAGE_CAPPED_PLUS_FIXED_FEE = 2;
+    FIXED = 3;
+    RANGE = 4;
+}
+
+message RangeFee {
+    uint64 startFee = 1;
+    uint64 endFee = 2;
+}
+
+message FeeRule {
+    FeeChargeType feeChargeType = 1;
+    optional uint32 percentage = 2;
+    optional uint64 cap = 3;
+    optional uint64 fixedFee = 4;
+    repeated RangeFee rangeFee = 5;
+}
+
+message FeeCatalogue {
+    FeeType feeType = 1;
+    FeeRule feeRule = 2;
+    optional uint32 commisionLevel = 3;
+    optional string productId = 4;
+    optional string serviceId = 5;
+    optional com.agencybanking.proto.libs.common.proto.DataStatus status = 6;
+    optional uint64 createdAt = 7;
+    optional uint64 updatedAt = 8;
+}
+
+message GetServiceResponse {
+    Service service = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse response = 2;
+}
+
+message GetServicesResponse {
+    repeated Service service = 1;
+    com.agencybanking.proto.libs.common.proto.GenericFetchResponseMeta reponseMeta = 2;
+}
+
+message GetProductResponse {
+    Product product = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse response = 2;
+}
+
+message GetProductsResponse {
+    repeated Product product = 1;
+    com.agencybanking.proto.libs.common.proto.GenericFetchResponseMeta reponseMeta = 2;
+}
+
+message GetFeeCatalogueResponse {
+    FeeCatalogue feeCatalogue = 1;
+    com.agencybanking.proto.libs.common.proto.GenericResponse response = 2;
+}
+
+message GetFeeCataloguesResponse {
+    repeated FeeCatalogue feeCatalogue = 1;
+    com.agencybanking.proto.libs.common.proto.GenericFetchResponseMeta reponseMeta = 2;
+}
+
+// Note that some of the calls that require authenticated user would have the refereshToken an token field
+
+service InventoryService {
+    rpc CreateService(Service) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc GetService(com.agencybanking.proto.libs.common.proto.GenericGetRequest) returns (GetServiceResponse);
+    rpc GetServices(com.agencybanking.proto.libs.common.proto.GenericFetchRequestMeta) returns (GetServicesResponse);
+    rpc UpdateServiceStatus(com.agencybanking.proto.libs.common.proto.GenericUpdateDataStatus) returns (GetServiceResponse);
+
+    rpc CreateProduct(Product) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc GetProduct(com.agencybanking.proto.libs.common.proto.GenericGetRequest) returns (GetProductResponse);
+    rpc GetProducts(com.agencybanking.proto.libs.common.proto.GenericFetchRequestMeta) returns (GetProductsResponse);
+    rpc UpdateProductStatus(com.agencybanking.proto.libs.common.proto.GenericUpdateDataStatus) returns (GetProductResponse);
+
+    rpc CreateFeeCatalogue(FeeCatalogue) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc GetFeeCatalogue(com.agencybanking.proto.libs.common.proto.GenericGetRequest) returns (GetFeeCatalogueResponse);
+    rpc GetFeeCatalogues(com.agencybanking.proto.libs.common.proto.GenericFetchRequestMeta) returns (GetFeeCataloguesResponse);
+    rpc UpdateFeeCatalogueStatus(com.agencybanking.proto.libs.common.proto.GenericUpdateDataStatus) returns (GetFeeCatalogueResponse);
+}

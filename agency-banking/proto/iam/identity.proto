@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.iam.identity.proto;
+
+import "proto/libs/common.proto";
+
+message PhoneNumber {
+    string countryCode = 1;
+    string number = 2;
+}
+
+message Name {
+    string firstName = 1;
+    string lastName = 2;
+    optional string middleName = 3;
+}
+
+message Image {
+    string imageLink = 1;
+}
+
+message User {
+    optional Name name = 1;
+    optional string email = 2;
+    PhoneNumber userPrimaryPhoneNumber = 3;
+    optional Image userImage = 4;
+    optional com.agencybanking.proto.libs.common.proto.DataStatus status = 5;
+}

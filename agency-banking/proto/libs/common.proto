@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.libs.common.proto;
+
+message Empty {
+
+}
+
+message GenericResponse {
+    string message = 1;
+    bool status = 2;
+}
+
+enum DataStatus {
+    ACTIVE = 0;
+    INACTIVE = 1;
+    SUSPENDED = 2;
+}
+
+message GenericUpdateDataStatus {
+    string id = 1;
+    DataStatus status = 2;
+}
+
+message GenericGetRequest {
+    string id = 1;
+}
+
+message GenericFetchRequestMeta {
+    optional uint64 size = 1;
+    optional uint64 page = 2;
+    optional int64 from_datetime = 3;
+    optional int64 to_datetime = 4;
+}
+
+message GenericFetchResponseMeta {
+    optional uint64 total = 2;
+    optional uint64 number_of_pages = 3;
+    optional uint64 current_page = 4;
+    optional uint64 next_page = 5;
+    optional uint64 last_page = 6;
+}
+

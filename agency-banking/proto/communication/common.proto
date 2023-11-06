@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.communication.common.proto;
+
+import "proto/libs/common.proto";
+import "proto/iam/identity.proto";
+
+enum OTPType {
+    ONBOARDING_PHONE_NUMBER = 0;
+    ONBOARDING_EMAIL = 1;
+    FORGOT_PASSWORD_BY_PHONE_NUMBER = 2;
+    FORGOT_PASSWORD_BY_EMAIL = 3;
+}
+
+message OTP {
+    OTPType otpType = 1;
+    string value = 2;
+}
+
+message SubmitOTPRequest {
+    OTP otp = 1;
+    optional com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 2;
+    optional string email = 3;
+}
+
+message OTPRequest {
+    OTPType otpType = 1;
+    optional com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 2;
+    optional string email = 3;
+    optional string message = 4;
+}
+
+message RequestOTPResponse {
+    optional string message = 2;
+    bool status = 3;
+}
+
+service CommunicationService {
+    rpc SubmitOTP(SubmitOTPRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc RequestOTP(OTPRequest) returns (RequestOTPResponse);
+}

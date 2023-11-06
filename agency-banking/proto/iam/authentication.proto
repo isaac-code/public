@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.iam.authentication.proto;
+
+import "proto/iam/identity.proto";
+import "proto/communication/common.proto";
+import "proto/libs/common.proto";
+
+enum RegistrationStep {
+    USER_PHONE_NUMBER_VERIFICATION = 0;
+    USER_DETAIL_SUBMISSION = 1;
+    USER_EMAIL_VERIFICATION = 2;
+}
+
+enum LoginType {
+    PASSWORD = 0;
+    FINGER_PRINT = 1;
+    REFRESH_TOKEN = 2;
+}
+
+enum ForgotPasswordType {
+    BY_PRIMARY_PHONE_NUMBER = 0;
+    BY_EMAIL = 1;
+    BY_SECONDARY_PHONE_NUMBER = 2;
+}
+
+message UserDetailForRegistration {
+    com.agencybanking.proto.iam.identity.proto.Name name = 1;
+    com.agencybanking.proto.communication.common.proto.OTP otp = 2;
+    string password = 3;
+    string email = 4;
+}
+
+message RegistrationRequest {
+    RegistrationStep registrationStep = 1;
+    com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 2;
+    optional UserDetailForRegistration userDetailForRegistration = 3;
+}
+
+message ForgotPasswordRequest {
+    ForgotPasswordType forgotPasswordType = 1;
+    optional com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 2;
+    optional string email = 3;
+}
+
+message ForgotPasswordResponse {
+    bool status = 1;
+    string message = 2;
+    optional bool requireSecurityQuestionAnswer = 3;
+    optional string securityQuestion = 4;
+}
+
+message ResetPasswordRequest {
+    com.agencybanking.proto.communication.common.proto.OTP otp = 1;
+    optional com.agencybanking.proto.iam.identity.proto.PhoneNumber phoneNumber = 2;
+    optional string email = 3;
+    string newPassword = 4;
+    optional string securityQuestionAnswer = 5;
+}
+
+message ChangePasswordRequest {
+    string oldPassword = 2;
+    string newPassword = 3;
+}
+
+message LoginWithPassword {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginWithFingerPrint {
+    string fingerPrintHash = 1;
+}
+
+message LoginWithRefreshToken {
+    string refreshToken = 1;
+}
+
+message LoginRequest {
+    LoginType loginType = 1;
+    optional LoginWithPassword loginWithPassword = 2;
+    optional LoginWithFingerPrint loginWithFingerPrint = 3;
+    optional LoginWithRefreshToken loginWithRefreshToken = 4;
+}
+
+message LoginResponse {
+    string token = 1;
+    string refreshToken = 2;
+    bool status = 3;
+    optional string message = 4;
+}
+
+message PersistSecurityQuestionRequest {
+    string question = 1;
+    string answer = 2;
+}
+
+message UpdateSecurityQuestionStatusRequest {
+    bool status = 1;
+}
+
+// Note that some of the calls that require authenticated user would have the refereshToken an token field
+
+service AuthenticationService {
+    rpc ProcessRegistration(RegistrationRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+    rpc ResetPassword(ResetPasswordRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc ChangePassword(ChangePasswordRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc PersistSecurityQuestion(PersistSecurityQuestionRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+    rpc UpdateSecurityQuestionStatus(UpdateSecurityQuestionStatusRequest) returns (com.agencybanking.proto.libs.common.proto.GenericResponse);
+}

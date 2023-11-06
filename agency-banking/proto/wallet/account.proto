@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package com.agencybanking.proto.wallet.account.proto;
+
+import "proto/disbursement/money.proto";
+
+enum Bank {
+    FIRST_BANK = 0;
+    ACCESS_BANK = 1;
+}
+
+message AccountIdentity {
+    string handle = 1;
+    Bank bank = 2;
+    optional string name = 3;
+    optional string bankCode = 4;
+}
+
+enum AccountWalletStatus {
+    DORMANT = 0;
+    ACTIVE = 1;
+    PND = 2;
+}
+
+message AccountWalletHistory {
+    int64 date_time = 1;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount previousBalance = 2;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount currentBalance = 3;
+    string transactionReference = 4;
+    string walletReference = 5;
+}
+
+message AccountWallet {
+    string reference = 1;
+    com.agencybanking.proto.disbursement.money.proto.MonetaryAmount amount = 2;
+    AccountWalletStatus status = 4;
+}
